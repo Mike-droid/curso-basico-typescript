@@ -27,17 +27,18 @@ let unusable;
 //!unusable = null //Esto da una error
 unusable = undefined;
 //* Tipo: Never
-function handleError(code, message) {
-    //*Process your code here
-    //*Generate a message
-    throw new Error(`${message}. Code: ${code}`);
+/* function handleError(code:number, message:string):never {
+  //*Process your code here
+  //*Generate a message
+  throw new Error(`${message}. Code: ${code}`);
 }
+
 try {
-    handleError(404, "Not Found");
-    //*Nunca retorna un valor
-}
-catch (error) {
-}
+  handleError(404, "Not Found")
+  //*Nunca retorna un valor
+} catch (error) {
+
+} */
 /* function sumNumbers(limit: number):never {
   //!Bucle infinito
   let sum = 0

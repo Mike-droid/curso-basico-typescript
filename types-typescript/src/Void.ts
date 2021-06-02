@@ -33,7 +33,7 @@ unusable = undefined
 
 //* Tipo: Never
 
-function handleError(code:number, message:string):never {
+/* function handleError(code:number, message:string):never {
   //*Process your code here
   //*Generate a message
   throw new Error(`${message}. Code: ${code}`);
@@ -44,7 +44,7 @@ try {
   //*Nunca retorna un valor
 } catch (error) {
 
-}
+} */
 
 /* function sumNumbers(limit: number):never {
   //!Bucle infinito

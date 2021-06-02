@@ -619,3 +619,730 @@ try {
   console.log('Oh no, han error ocurred:', error)
 }
 ```
+
+## Tipos personalizados
+
+### Interfaces
+
+Las interfaces en TS constituyen una forma poderosa de definir "contratos" tanto para tu proyecto, como para el código externo del mismo.
+
+[Documentación oficial sobre interfaces en TS](https://www.typescriptlang.org/docs/handbook/2/objects.html#interfaces-vs-intersections)
+
+[Interfaces en TS explicado en TutorialsTeacher](https://www.tutorialsteacher.com/typescript/typescript-interface)
+
+[Interfaces en TS explicado en Desarrollo Web](https://desarrolloweb.com/articulos/definicion-interfaces-typescript.html)
+
+[Interfaces en TS explicado en TutorialsPoint](https://www.tutorialspoint.com/typescript/typescript_interfaces.htm)
+
+```typescript
+//* Función para mostrar una fotografía
+export {}
+
+enum PhotoOrientation{
+  Landscape,
+  Portrait,
+  Square,
+  Panorama
+}
+
+interface Picture {
+  title: string,
+  date: string,
+  orientation: PhotoOrientation
+}
+
+function showPicture(picture: Picture) {
+  console.table({picture}) //* Imprime una tabla con los datos del objeto, se ve muy profesional
+}
+
+let myPic = {
+  title: 'Test title',
+  date: '2020-03',
+  orientation: PhotoOrientation.Landscape
+}
+
+showPicture(myPic)
+showPicture({
+  title: 'Another title',
+  date: '2021-06',
+  orientation: PhotoOrientation.Portrait
+})
+```
+
+### Interfaces: propiedades opcionales
+
+No todas las propiedades de una interfaz podrían ser requeridas.
+
+Establecemos una propiedad como opcional con el símbolo '?' después del nombre.
+
+```typescript
+interface PictureConfig {
+  title?: string, //* El '?' indica que el parámetro es opcional
+  date?: string,
+  orientation?: PhotoOrientation
+}
+
+function generatePicture(config: PictureConfig) {
+  const picture = {title: 'Default title', date: '2020-01-01'} //*Valores por defecto
+  if (config.title) {
+    picture.title = config.title
+  }
+  if (config.date) {
+    picture.date = config.date
+  }
+
+  return picture
+}
+
+let picture = generatePicture({})
+console.table({picture})
+
+picture = generatePicture({title: 'Travel Pic'})
+console.table({picture})
+
+picture = generatePicture({title: 'Travel Pic', date: '2016-06-23'})
+console.table({picture})
+```
+
+#### Interfaces: Propiedades de solo lectura
+
+Algunas propiedades de la interfaz podrían no ser modificables una vez creado el objeto. Esto es posible usando `readonly` antes del nombre de la propiedad.
+
+```typescript
+//* Interfaz: Usuario
+
+interface User {
+  readonly id: number,
+  username: string,
+  isPro: boolean
+}
+
+let user: User = {id: 10, username: 'Mike', isPro: true}
+console.table({user})
+//*modificamos ahora un campo
+//! user.id = 20 ahora no podemos modificar este campo
+user.username = 'paparazzi'
+console.table({user})
+```
+
+### Extensión de interfaces
+
+La herencia es un mecanismo para poder reutilzar código dentro de la programación orientada a objetos. TS provee esto con las interfaces. Las interfaces pueden extenderse de otras. Esto permite copiar los miembros ya definidos en una interfaz a otra, ganando flexibilidad y reusabilidad de componentes.
+
+```typescript
+export {}
+
+enum PhotoOrientation{
+  Landscape,
+  Portrait,
+  Square,
+  Panorama
+}
+
+//*Herencia de interfaces
+
+interface Entity {
+  id: number,
+  title: string,
+}
+
+interface Album  extends Entity{
+  //*Copia de los atributos de Entity
+  description: string
+}
+
+interface Picture extends Entity {
+  orientation: PhotoOrientation
+}
+
+const album: Album = {
+  id: 5,
+  title: 'Meetups',
+  description: 'Community events around the world'
+}
+
+const picture: Picture = {
+  id: 10,
+  title: 'Family',
+  orientation: PhotoOrientation.Square
+}
+
+let newPicture = {} as Picture
+newPicture.id = 2
+newPicture.title = 'Moon'
+
+console.table({album})
+console.table({picture})
+console.table({newPicture})
+```
+
+### Clases
+
+#### Definiendo clases y constructores
+
+A partir de ECMAScript 2015 es posible construir clases y hacer uso del paradigma de POO en JS. TS permite aplicar estas técnicas sin tener que esperar por otra versión.
+
+```typescript
+export {}
+
+enum PhotoOrientation{
+  Landscape,
+  Portrait,
+  Square,
+  Panorama
+}
+
+class Picture {
+  //* Propiedades
+  id: number
+  title: string
+  orientation: PhotoOrientation
+
+  //*Atributos que se consideran necesarios para construir objetos
+  constructor(id: number, title: string, orientation: PhotoOrientation) {
+    this.id = id
+    this.title = title
+    this.orientation = orientation
+  }
+
+  //*Comportamiento
+  toString() {
+    return `
+    [
+      id: ${this.id},
+      title: ${this.title},
+      orientation: ${this.orientation}
+    ]
+    `
+  }
+}
+
+class Album {
+  id: number
+  title: string
+  pictures: Picture[]
+
+  constructor(id: number, title: string) {
+    this.id = id
+    this.title = title
+    this.pictures = [] //*Inicializamos el array vacío
+  }
+
+  addPicture(picture: Picture) {
+    this.pictures.push(picture)
+  }
+}
+
+const album: Album = new Album(1, 'Personal Pictures')
+const picture: Picture = new Picture(1, 'Selfie', PhotoOrientation.Square)
+album.addPicture(picture)
+
+//console.table(album)
+//console.table(picture)
+//console.table({picture})
+console.log(album) //* Imprime el objeto
+console.table({album}) //* Como manejamos un objeto, podemos usar console.table
+console.table(album.pictures) //* Como tenemos un array dentro del objeto, también podemos usar console.table
+
+```
+
+### Clases públicas y privadas
+
+#### Clases - Miembros públicos
+
+TS define un modificador de acceso público por defecto para los miembros de clase.
+
+También es posible marcar un miembro como público usando la palabra reservada `public`.
+
+```typescript
+export {}
+
+enum PhotoOrientation{
+  Landscape,
+  Portrait,
+  Square,
+  Panorama
+}
+
+class Picture {
+  //* Propiedades
+  public id: number
+  public title: string
+  public orientation: PhotoOrientation
+
+  //*Atributos que se consideran necesarios para construir objetos
+  public constructor(id: number, title: string, orientation: PhotoOrientation) {
+    this.id = id
+    this.title = title
+    this.orientation = orientation
+  }
+
+  //*Comportamiento
+  public toString() {
+    return `
+    [
+      id: ${this.id},
+      title: ${this.title},
+      orientation: ${this.orientation}
+    ]
+    `
+  }
+}
+
+class Album {
+  public id: number
+  public title: string
+  public pictures: Picture[]
+
+  public constructor(id: number, title: string) {
+    this.id = id
+    this.title = title
+    this.pictures = [] //*Inicializamos el array vacío
+  }
+
+  public addPicture(picture: Picture) {
+    this.pictures.push(picture)
+  }
+}
+
+const album: Album = new Album(1, 'Personal Pictures')
+const picture: Picture = new Picture(1, 'Selfie', PhotoOrientation.Square)
+album.addPicture(picture)
+
+//console.table(album)
+//console.table(picture)
+//console.table({picture})
+console.log(album) //* Imprime el objeto
+console.table({album}) //* Como manejamos un objeto, podemos usar console.table
+console.table(album.pictures) //* Como tenemos un array dentro del objeto, también podemos usar console.table
+
+//* Accediendo a los miembros públicos
+picture.id = 100
+picture.orientation = PhotoOrientation.Panorama
+picture.title = 'Imagen chida'
+console.table({album})
+console.table(album.pictures)
+```
+
+#### Clases - Miembros privados
+
+TS define una manera propia de declarar o marcar un miembro como privado usando la palabra reservada `private`
+
+```typescript
+export {}
+
+enum PhotoOrientation{
+  Landscape,
+  Portrait,
+  Square,
+  Panorama
+}
+
+class Picture {
+  //* Propiedades
+  private id: number
+  private title: string
+  private orientation: PhotoOrientation
+
+  //*Atributos que se consideran necesarios para construir objetos
+  //! No tiene sentido marcar un constructor como privado, no podríamos construir más objetos
+  public constructor(id: number, title: string, orientation: PhotoOrientation) {
+    this.id = id
+    this.title = title
+    this.orientation = orientation
+  }
+
+  //*Comportamiento
+  public toString() {
+    return `
+    [
+      id: ${this.id},
+      title: ${this.title},
+      orientation: ${this.orientation}
+    ]
+    `
+  }
+}
+
+class Album {
+  private id: number
+  private title: string
+  private pictures: Picture[]
+
+  public constructor(id: number, title: string) {
+    this.id = id
+    this.title = title
+    this.pictures = [] //*Inicializamos el array vacío
+  }
+
+  public addPicture(picture: Picture) {
+    this.pictures.push(picture)
+  }
+
+  public showPictures(){
+    for (let index = 0; index < this.pictures.length; index++) {
+      console.log(`Soy el índice ${index}`)
+      console.table(this.pictures[index])
+    }
+  }
+}
+
+const album: Album = new Album(1, 'Personal Pictures')
+const picture: Picture = new Picture(1, 'Selfie', PhotoOrientation.Square)
+const picture2: Picture = new Picture(2, 'Selfie2', PhotoOrientation.Landscape)
+const picture3: Picture = new Picture(3, 'Selfie3', PhotoOrientation.Portrait)
+album.addPicture(picture)
+album.addPicture(picture2)
+album.addPicture(picture3)
+
+console.log(album) //* Imprime el objeto
+console.table({album}) //* Como manejamos un objeto, podemos usar console.table
+album.showPictures()
+
+//! No podemos acceder a los atributos privados desde afuera
+//picture.id = 100
+//picture.orientation = PhotoOrientation.Panorama
+//picture.title = 'Imagen chida'
+```
+
+#### Miembros privados - ECMAScript
+
+TypeScript también soporta (a partir de la versión 3.8) la nueva sintaxis JS para miembros privados: `#atributo`.
+
+Esta característica puede ofrecer mejores garantías de aislamiento en miembros privados.
+
+```typescript
+export {}
+
+//* TypeScript >= 3.8
+/*Ahora suando '#' es similar a escribir 'private' pero esta sintaxís es más estricta y no nos muestra ninguna información */
+
+enum PhotoOrientation{
+  Landscape,
+  Portrait,
+  Square,
+  Panorama
+}
+
+class Picture {
+  //* Propiedades
+  #id: number
+  #title: string
+  #orientation: PhotoOrientation
+
+  //*Atributos que se consideran necesarios para construir objetos
+  //! No tiene sentido marcar un constructor como privado, no podríamos construir más objetos
+  public constructor(id: number, title: string, orientation: PhotoOrientation) {
+    this.#id = id
+    this.#title = title
+    this.#orientation = orientation
+  }
+
+  //*Comportamiento
+  public toString() {
+    return `
+    [
+      id: ${this.#id},
+      title: ${this.#title},
+      orientation: ${this.#orientation}
+    ]
+    `
+  }
+}
+
+class Album {
+  #id: number
+  #title: string
+  #pictures: Picture[]
+
+  public constructor(id: number, title: string) {
+    this.#id = id
+    this.#title = title
+    this.#pictures = [] //*Inicializamos el array vacío
+  }
+
+  public addPicture(picture: Picture) {
+    this.#pictures.push(picture)
+  }
+
+  public showPictures(){
+    for (let index = 0; index < this.#pictures.length; index++) {
+      console.log(`Soy el índice ${index}`)
+      console.table(this.#pictures[index])
+    }
+  }
+}
+
+const album: Album = new Album(1, 'Personal Pictures')
+const picture: Picture = new Picture(1, 'Selfie', PhotoOrientation.Square)
+const picture2: Picture = new Picture(2, 'Selfie2', PhotoOrientation.Landscape)
+const picture3: Picture = new Picture(3, 'Selfie3', PhotoOrientation.Portrait)
+album.addPicture(picture)
+album.addPicture(picture2)
+album.addPicture(picture3)
+
+console.log(album) //* Imprime el objeto
+console.table({album}) //* Como manejamos un objeto, podemos usar console.table
+album.showPictures()
+
+```
+
+### Métodos get y set
+
+TS soporta los métodos get y set como una forma de interceptar los accesos a los miembros privados de un objeto.
+
+```typescript
+export {}
+
+enum PhotoOrientation{
+  Landscape,
+  Portrait,
+  Square,
+  Panorama
+}
+
+//* get y set
+
+class Picture {
+  //* Propiedades
+  private _id: number
+  private _title: string
+  private _orientation: PhotoOrientation
+
+  //*Atributos que se consideran necesarios para construir objetos
+  //! No tiene sentido marcar un constructor como privado, no podríamos construir más objetos
+  public constructor(id: number, title: string, orientation: PhotoOrientation) {
+    this._id = id
+    this._title = title
+    this._orientation = orientation
+  }
+
+  get idPicture(){
+    return this._id
+  }
+  set idPicture(id: number){
+    this._id = id
+  }
+  get titlePicture(){
+    return this._title
+  }
+  set titlePicture(title: string){
+    this._title = title
+  }
+  get orientationPicture(){
+    return this._orientation
+  }
+  set orientationPicture(orientation: PhotoOrientation){
+    this._orientation = orientation
+  }
+
+  //*Comportamiento
+  public toString() {
+    return `
+    [
+      id: ${this._id},
+      title: ${this._title},
+      orientation: ${this._orientation}
+    ]
+    `
+  }
+}
+
+class Album {
+  private _id: number
+  private _title: string
+  private pictures: Picture[]
+
+  public constructor(id: number, title: string) {
+    this._id = id
+    this._title = title
+    this.pictures = [] //*Inicializamos el array vacío
+  }
+
+  public addPicture(picture: Picture) {
+    this.pictures.push(picture)
+  }
+
+  get idAlbum(){
+    return this._id
+  }
+  set idAlbum(id: number){
+    this._id = id
+  }
+  get titleAlbum(){
+    return this._title
+  }
+  set titleAlbum(title: string){
+    this._title = title
+  }
+
+  public showPictures(){
+    for (let index = 0; index < this.pictures.length; index++) {
+      console.log(`Soy el índice ${index}`)
+      console.table(this.pictures[index])
+    }
+  }
+}
+
+const album: Album = new Album(1, 'Personal Pictures')
+const picture: Picture = new Picture(1, 'Selfie', PhotoOrientation.Square)
+const picture2: Picture = new Picture(2, 'Selfie2', PhotoOrientation.Landscape)
+const picture3: Picture = new Picture(3, 'Selfie3', PhotoOrientation.Portrait)
+album.addPicture(picture)
+album.addPicture(picture2)
+album.addPicture(picture3)
+
+console.log(album) //* Imprime el objeto
+console.table({album}) //* Como manejamos un objeto, podemos usar console.table
+album.showPictures()
+
+//* Estamos usando los métodos get y set y, no los atributos directamente
+picture.idPicture = 100
+picture.titlePicture = 'Another title'
+album.titleAlbum = 'Title for an album'
+console.table({album})
+```
+
+### Herencia
+
+#### Herencia de Clases y Miembros Protegidos
+
+TS soporta este patrón común en el mundo de la POO. Implementa la habilidad de extender código de clases existentes a tráves de la herencia.
+
+Modificadores de acceso en Java (puede ser similar en TypeScript):
+
+||Class|Package|Subclass(same pkg)|Subclass(diff pkg)|World|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|public|+|+|+|+|+|
+|protected|+|+|+|+||
+|no modifier|+|+|+|||
+|private|+|||||
+
+#### Clases Abstractas
+
+Las clases abstractas son la base de donde otras clases podrían derivarse. A diferencia de una interfaz, una clase abstracta puede implementar funciones para sus instancias.
+
+La palabra reservada es `abstract`.
+
+#### Propiedades estáticas y propiedades de solo lectura
+
+Las clases por lo general definen atributos y métodos aplicables a las instancias de las mismas.
+
+A través de la palabra reservada `static` se puede definir un miembro visible a nivel de clase.
+
+Al igual que las interfaces, podemos usar la palabra reservada `readonly` para marcar el miembre de una clase como solo lectura.
+
+```typescript
+export {}
+
+enum PhotoOrientation{
+  Landscape,
+  Portrait,
+  Square,
+  Panorama
+}
+
+//*Superclase
+abstract class Item {
+  protected readonly _id: number
+  protected _title: string
+
+  constructor(id: number, title: string){
+    this._id = id
+    this._title = title
+  }
+
+  get id(){
+    return this._id
+  }
+
+  get title(){
+    return this._title
+  }
+  set title(title: string){
+    this._title = title
+  }
+}
+
+class Picture extends Item {
+  public static photoOrientation = PhotoOrientation
+  //* Propiedades
+  private _orientation: PhotoOrientation
+
+  //*Atributos que se consideran necesarios para construir objetos
+  //! No tiene sentido marcar un constructor como privado, no podríamos construir más objetos
+  public constructor(id: number, title: string, orientation: PhotoOrientation) {
+    super(id, title)
+    this._orientation = orientation
+  }
+
+  get orientationPicture(){
+    return this._orientation
+  }
+  set orientationPicture(orientation: PhotoOrientation){
+    this._orientation = orientation
+  }
+
+  //*Comportamiento
+  public toString() {
+    return `
+    [
+      id: ${this._id},
+      title: ${this._title},
+      orientation: ${this._orientation}
+    ]
+    `
+  }
+}
+
+class Album extends Item {
+  private pictures: Picture[]
+
+  public constructor(id: number, title: string) {
+    super(id, title)
+    this.pictures = [] //*Inicializamos el array vacío
+  }
+
+  public addPicture(picture: Picture) {
+    this.pictures.push(picture)
+  }
+
+  public showPictures(){
+    for (let index = 0; index < this.pictures.length; index++) {
+      console.log(`Soy el índice ${index}`)
+      console.table(this.pictures[index])
+    }
+  }
+}
+
+const album: Album = new Album(1, 'Personal Pictures')
+const picture: Picture = new Picture(1, 'Selfie', PhotoOrientation.Square)
+
+//* Estamos usando los métodos get y set y, no los atributos directamente
+//!picture.id = 100 ya no podemos hacer esto por ser readonly
+picture.title = 'Another title'
+album.title = 'Title for an album'
+console.table({album})
+console.table({picture})
+/* console.log('Album: ', {album})
+console.log('Picture: ', {picture}) */
+
+//!const item = new Item(1, 'test title') //!No podemos hacer esto porque la clase es abstracta
+
+//* Probar el miembro estático de Picture
+console.log('PhotoOrientation' , Picture.photoOrientation.Landscape)
+```
+
+### Resumen
+
+Los módulos en TS proveen un mecanimos para una mejor organización del código y promueven su reutilización.
+
+A partir de ECMAScript 2015, los módulos son parte nativa del lenguaje de JS.
+
+#### Importando y Exportando en Módulos
+
+Generalmente se define un módulo con la idea de agruaar código relacionado.
+
+Podemos tomar criterios en torno a la funcionalidad, features, utilitarios, modelos, etc.
+
+Los miembros de módulo interactúan con el suo de las palabras reservadas `import` y `export`.

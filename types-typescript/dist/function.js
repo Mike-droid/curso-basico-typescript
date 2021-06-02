@@ -36,8 +36,8 @@ function handleError(code) {
 try {
     let result = handleError(200);
     console.log('result', result);
-    result = handleError(404); //!Mostrará un error en la consola, es intencional
-    console.log('result again: ', result);
+    //result = handleError(404) //!Mostrará un error en la consola, es intencional
+    //console.log('result again: ', result)
 }
 catch (error) {
     console.log('Oh no, han error ocurred:', error);
