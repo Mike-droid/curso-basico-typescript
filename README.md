@@ -1346,3 +1346,48 @@ Generalmente se define un módulo con la idea de agruaar código relacionado.
 Podemos tomar criterios en torno a la funcionalidad, features, utilitarios, modelos, etc.
 
 Los miembros de módulo interactúan con el suo de las palabras reservadas `import` y `export`.
+
+## Módulos
+
+### Principios de responsabilidad única
+
+Idealmente, un archivo debería tener un propósito o responsabilidad única: definir una clase, una interfaz, un enumerado,etc.
+
+Esto mejora la legibilidad de código, facilita su lectura, testing y favorece su mantenimiento.
+
+Esto viene de [SOLID](https://en.wikipedia.org/wiki/SOLID), un principio de la POO.
+
+Tenemos ahora todos las clases separadas en archivos.
+
+Podemos hacer que el compilador de TS compile todo una carpeta o proyecto, escribiendo `tsc --project nombreDelFolder`
+
+### Resolviendo módulos
+
+TS resuelve la ubicación de módulos observando referencias relativas absolutas.
+
+Porteriormente intenta localizar el módulo usando una **estrategia de resolución de módulos**.
+
+- `tsc --moduleResolution node` -> Más configurable
+- `tsc --moduleResolution classic` -> Poco configurable
+
+existen los path alias para que no tengamos que lidiar con esa mano de puntos y slash en nuestros proyectos.
+Esta configuración la pueden poner en el ts.config.json dentro de compilerOptions y así pueden acceder al shortcut @item para llegar a esa carpeta en específico que están buscando.
+Para el ejemplo yo tengo una carpeta item y dentro el archivo index.ts.
+
+```typescript
+"paths": {
+  "@item": ["item/index.ts"],
+}
+```
+
+y así se podría importar
+
+```typescript
+import { Item }  from  '@item'
+```
+
+### Webpack y agrupación de Módulos
+
+Webpack es un empaquetador de archivos y plugins. Para usarlo es necesario iniciar con `npm init -y`
+
+`npm i typescript webpack webpack-cli --save-dev`
